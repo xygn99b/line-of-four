@@ -10,7 +10,7 @@ const (
 	TokenBlue       = 'b'
 )
 
-func GetTokenString(token Token) string {
+func (token Token) String() string {
 	switch token {
 	case TokenRed:
 		return "Red"
@@ -20,7 +20,7 @@ func GetTokenString(token Token) string {
 	return ""
 }
 
-func GetTokenColor(token Token) *color.Color {
+func (token Token) Color() *color.Color {
 	switch token {
 	case TokenRed:
 		return color.New(color.BgRed)
