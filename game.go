@@ -40,6 +40,8 @@ func (g Game) Run() {
 	board := NewBoard()
 	gameState := NewGameState()
 	for !gameState.GameFinished {
+		ClearScreen()
+
 		token := gameState.CurrentToken()
 
 		board.PrintRepresentation()
@@ -70,7 +72,10 @@ func (g Game) Run() {
 			gameState.GameFinished = true
 			gameState.EndGameMessage = token.Color().Sprintf("%s won!", token)
 		}
+
 	}
+
+	ClearScreen()
 	board.PrintRepresentation()
 	println(gameState.EndGameMessage)
 }
