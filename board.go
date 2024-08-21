@@ -2,18 +2,10 @@ package main
 
 import "errors"
 
-type Token rune
-
 const (
 	BoardColumns             = 7
 	BoardRows                = 6
 	ConsecutiveWinningTokens = 4 // Number of tokens in a row required to win the game (connect X)
-)
-
-const (
-	TokenNull Token = iota // Blank spaces
-	TokenRed        = 'r'
-	TokenBlue       = 'b'
 )
 
 var (
