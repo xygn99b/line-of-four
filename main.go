@@ -4,19 +4,9 @@ import "fmt"
 
 func main() {
 	board := NewBoard()
-	turnNumber := 0
-	turnOver := false
-	token := TokenRed
-	for {
-		if turnOver {
-			turnNumber++
-			if turnNumber%2 == 0 {
-				token = TokenRed
-			} else {
-				token = TokenBlue
-			}
-			turnOver = false
-		}
+	gameState := NewGameState()
+	for !gameState.GameFinished {
+		token := gameState.CurrentToken()
 
 		print(board.Representation())
 		fmt.Printf("%c: Place your token", token)
@@ -31,19 +21,20 @@ func main() {
 			continue
 		}
 
-		turnOver = true
+		gameState.NextTurn()
 
 		if board.Full() {
-			print(board.Representation())
-			fmt.Printf("Board is full. Draw")
-			break
+			gameState.GameFinished = true
+			gameState.EndGameMessage = "Board is full. Draw"
 		}
 
 		win := board.CheckWin([2]int{location - 1, row})
 		if win {
-			print(board.Representation())
-			fmt.Printf("%c wins\n", token)
-			break
+			gameState.GameFinished = true
+			gameState.EndGameMessage = fmt.Sprintf("%c won!", token)
 		}
+
 	}
+	print(board.Representation())
+	println(gameState.EndGameMessage)
 }
