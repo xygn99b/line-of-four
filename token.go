@@ -23,9 +23,9 @@ func (token Token) String() string {
 func (token Token) Color() *color.Color {
 	switch token {
 	case TokenRed:
-		return color.New(color.BgRed)
+		return color.New(color.FgRed)
 	case TokenBlue:
-		return color.New(color.BgBlue)
+		return color.New(color.FgBlue)
 	}
 	return color.New(color.FgWhite)
 }

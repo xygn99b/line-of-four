@@ -42,7 +42,7 @@ func (g Game) Run() {
 	for !gameState.GameFinished {
 		token := gameState.CurrentToken()
 
-		print(board.Representation())
+		board.PrintRepresentation()
 		token.Color().Printf("%s: Place your token", token)
 		print("\n>")
 
@@ -71,6 +71,6 @@ func (g Game) Run() {
 			gameState.EndGameMessage = token.Color().Sprintf("%s won!", token)
 		}
 	}
-	print(board.Representation())
+	board.PrintRepresentation()
 	println(gameState.EndGameMessage)
 }

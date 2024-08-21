@@ -22,25 +22,22 @@ func NewBoard() *Board {
 	return board
 }
 
-// Representation returns a string representation of the board and its tokens.
-func (b *Board) Representation() string {
-	var out string
-	out += "  (1) (2) (3) (4) (5) (6) (7)\n"
-	out += "   -   -   -   -   -   -   -\n"
+// PrintRepresentation returns a string representation of the board and its tokens.
+func (b *Board) PrintRepresentation() {
+	print("  (1) (2) (3) (4) (5) (6) (7)\n")
+	print("   -   -   -   -   -   -   -\n")
 	for y := len(b.Locations[0]) - 1; y >= 0; y-- {
-		var rowString string
 		for x := range len(b.Locations) {
 			token := b.Locations[x][y]
-			rowString += "   "
+			print("   ")
 			if token == TokenNull {
-				rowString += "O"
+				print("O")
 				continue
 			}
-			rowString += string(token)
+			token.Color().Print("O")
 		}
-		out += rowString + "\n"
+		print("\n")
 	}
-	return out
 }
 
 // Place places a token in the given column of the board, returning its row. It will return an ErrorColumnFull if the column already contains the maximum number of tokens
