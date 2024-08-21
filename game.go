@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type GameState struct {
 	TurnCount      int
@@ -41,7 +43,9 @@ func (g Game) Run() {
 		token := gameState.CurrentToken()
 
 		print(board.Representation())
-		fmt.Printf("%s: Place your token\n", GetTokenString(token))
+		GetTokenColor(token).Printf("%s: Place your token", GetTokenString(token))
+		print("\n>")
+
 		var location int
 		if _, err := fmt.Scan(&location); err != nil {
 			println("There was a problem with your input. Enter the number above the desired column")
@@ -64,7 +68,7 @@ func (g Game) Run() {
 		win := board.CheckWin([2]int{location - 1, row})
 		if win {
 			gameState.GameFinished = true
-			gameState.EndGameMessage = fmt.Sprintf("%s won!", GetTokenString(token))
+			gameState.EndGameMessage = GetTokenColor(token).Sprintf("%s won!", GetTokenString(token))
 		}
 	}
 	print(board.Representation())

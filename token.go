@@ -1,5 +1,7 @@
 package main
 
+import "github.com/fatih/color"
+
 type Token rune
 
 const (
@@ -16,4 +18,14 @@ func GetTokenString(token Token) string {
 		return "Blue"
 	}
 	return ""
+}
+
+func GetTokenColor(token Token) *color.Color {
+	switch token {
+	case TokenRed:
+		return color.New(color.BgRed)
+	case TokenBlue:
+		return color.New(color.BgBlue)
+	}
+	return color.New(color.FgWhite)
 }
