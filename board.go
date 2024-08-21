@@ -179,3 +179,15 @@ func (b *Board) ValidPosition(x, y int) bool {
 func (b *Board) At(x, y int) Token {
 	return b.Locations[x][y]
 }
+
+// Full returns true if all locations on the board are occupied
+func (b *Board) Full() bool {
+	for _, row := range b.Locations {
+		for _, token := range row {
+			if token == TokenNull {
+				return false
+			}
+		}
+	}
+	return true
+}

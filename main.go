@@ -33,6 +33,12 @@ func main() {
 
 		turnOver = true
 
+		if board.Full() {
+			print(board.Representation())
+			fmt.Printf("Board is full. Draw")
+			break
+		}
+
 		win := board.CheckWin([2]int{location - 1, row})
 		if win {
 			print(board.Representation())

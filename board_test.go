@@ -2,6 +2,9 @@ package main
 
 import "testing"
 
+func init() {
+}
+
 func TestBoardPlace(t *testing.T) {
 	board := NewBoard()
 	if _, err := board.Place(TokenRed, 4); err != nil {
@@ -78,5 +81,27 @@ func TestBoardCheckWinBackwardDiagonal(t *testing.T) {
 
 	if win := board.CheckWin([2]int{5, 0}); !win {
 		t.Fatal("Board does not acknowledge backward diagonal wins")
+	}
+}
+
+func TestBoardFullEmpty(t *testing.T) {
+	board := NewBoard()
+
+	if board.Full() {
+		t.Fatal("Board considers an empty grid 'full'")
+	}
+}
+
+func TestBoardFull(t *testing.T) {
+	board := NewBoard()
+
+	for i := range 7 {
+		for range 6 {
+			board.Place(TokenBlue, i)
+		}
+	}
+
+	if !board.Full() {
+		t.Fatal("A full board does not consider itself 'full'.")
 	}
 }
