@@ -16,7 +16,10 @@ const (
 	TokenBlue       = 'b'
 )
 
-var ErrorColumnFull = errors.New("the selected column is full")
+var (
+	ErrorColumnFull      = errors.New("The selected column is full")
+	ErrorInvalidPosition = errors.New("The given position is invalid")
+)
 
 type Board struct {
 	Locations [BoardColumns][BoardRows]Token
@@ -50,6 +53,9 @@ func (b *Board) Representation() string {
 
 // Place places a token in the given column of the board, returning its row. It will return an ErrorColumnFull if the column already contains the maximum number of tokens
 func (b *Board) Place(token Token, column int) (int, error) {
+	if !b.ValidPosition(column, 0) {
+		return -1, ErrorInvalidPosition
+	}
 	for i := range b.Locations[column] {
 		if b.Locations[column][i] == TokenNull {
 			b.Locations[column][i] = token
