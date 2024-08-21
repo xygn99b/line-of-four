@@ -38,6 +38,7 @@ func (b *Board) PrintRepresentation() {
 		}
 		print("\n")
 	}
+	print("\n")
 }
 
 // Place places a token in the given column of the board, returning its row. It will return an ErrorColumnFull if the column already contains the maximum number of tokens
