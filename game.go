@@ -27,17 +27,18 @@ func (gs *GameState) CurrentToken() Token {
 }
 
 type Game struct {
-	State *GameState
+	State                    *GameState
+	consecutiveWinningTokens int
 }
 
-func NewGame() Game {
-	g := Game{}
+func NewGame(consecutiveWinningTokens int) Game {
+	g := Game{consecutiveWinningTokens: consecutiveWinningTokens}
 	g.State = NewGameState()
 	return g
 }
 
 func (g Game) Run() {
-	board := NewBoard()
+	board := NewBoard(g.consecutiveWinningTokens)
 	gameState := NewGameState()
 	for !gameState.GameFinished {
 		ClearScreen()

@@ -6,7 +6,7 @@ func init() {
 }
 
 func TestBoardPlace(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 	if _, err := board.Place(TokenRed, 4); err != nil {
 		t.Error(err)
 	}
@@ -16,7 +16,7 @@ func TestBoardPlace(t *testing.T) {
 }
 
 func TestBoardPlaceFull(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 	for range 6 {
 		if _, err := board.Place(TokenBlue, 0); err != nil {
 			t.Error(err)
@@ -28,14 +28,14 @@ func TestBoardPlaceFull(t *testing.T) {
 }
 
 func TestBoardCheckWinEmpty(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 	if win := board.CheckWin([2]int{0, 0}); win {
 		t.Fatal("Board considers an empty board a winning scenario")
 	}
 }
 
 func TestBoardCheckWinRow(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 	board.Place(TokenBlue, 2)
 	board.Place(TokenBlue, 3)
 	board.Place(TokenBlue, 4)
@@ -46,7 +46,7 @@ func TestBoardCheckWinRow(t *testing.T) {
 }
 
 func TestBoardCheckWinColumn(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 	board.Place(TokenBlue, 2)
 	board.Place(TokenBlue, 2)
 	board.Place(TokenBlue, 2)
@@ -57,7 +57,7 @@ func TestBoardCheckWinColumn(t *testing.T) {
 }
 
 func TestBoardCheckWinForwardDiagonal(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 
 	for i := range 4 {
 		for range i + 1 {
@@ -71,7 +71,7 @@ func TestBoardCheckWinForwardDiagonal(t *testing.T) {
 }
 
 func TestBoardCheckWinBackwardDiagonal(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 
 	for i := range 4 {
 		for range i + 1 {
@@ -85,7 +85,7 @@ func TestBoardCheckWinBackwardDiagonal(t *testing.T) {
 }
 
 func TestBoardFullEmpty(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 
 	if board.Full() {
 		t.Fatal("Board considers an empty grid 'full'")
@@ -93,7 +93,7 @@ func TestBoardFullEmpty(t *testing.T) {
 }
 
 func TestBoardFull(t *testing.T) {
-	board := NewBoard()
+	board := NewBoard(4)
 
 	for i := range 7 {
 		for range 6 {

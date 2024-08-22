@@ -3,9 +3,8 @@ package main
 import "errors"
 
 const (
-	BoardColumns             = 7
-	BoardRows                = 6
-	ConsecutiveWinningTokens = 4 // Number of tokens in a row required to win the game (connect X)
+	BoardColumns = 7
+	BoardRows    = 6
 )
 
 var (
@@ -14,11 +13,12 @@ var (
 )
 
 type Board struct {
-	Locations [BoardColumns][BoardRows]Token
+	Locations                [BoardColumns][BoardRows]Token
+	ConsecutiveWinningTokens int // Number of tokens in a line required to win
 }
 
-func NewBoard() *Board {
-	board := &Board{}
+func NewBoard(consecutiveWinningTokens int) *Board {
+	board := &Board{ConsecutiveWinningTokens: consecutiveWinningTokens}
 	return board
 }
 
@@ -96,7 +96,7 @@ func (b *Board) checkWinRow(token Token, row int) bool {
 			continue
 		}
 		count++
-		if count == ConsecutiveWinningTokens {
+		if count == b.ConsecutiveWinningTokens {
 			return true
 		}
 	}
@@ -111,7 +111,7 @@ func (b *Board) checkWinColumn(token Token, column int) bool {
 			continue
 		}
 		count++
-		if count == ConsecutiveWinningTokens {
+		if count == b.ConsecutiveWinningTokens {
 			return true
 		}
 	}
@@ -132,7 +132,7 @@ func (b *Board) checkWinForwardDiagonal(token Token, baseX, baseY int) bool {
 			continue
 		}
 		count++
-		if count == ConsecutiveWinningTokens {
+		if count == b.ConsecutiveWinningTokens {
 			return true
 		}
 	}
@@ -154,7 +154,7 @@ func (b *Board) checkWinBackwardDiagonal(token Token, baseX, baseY int) bool {
 			continue
 		}
 		count++
-		if count == ConsecutiveWinningTokens {
+		if count == b.ConsecutiveWinningTokens {
 			return true
 		}
 	}

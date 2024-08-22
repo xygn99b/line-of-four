@@ -1,6 +1,6 @@
 package main
 
 func main() {
-	game := NewGame()
+	game := NewGame(4)
 	game.Run()
 }
