@@ -22,10 +22,10 @@ func MainMenu() {
 
 	switch selection {
 	case Singleplayer:
+		os.Exit(0)
+	case Multiplayer:
 		game := NewGame(4)
 		game.Run()
-	case Multiplayer:
-		os.Exit(0)
 	case Exit:
 		os.Exit(0)
 	}
