@@ -1,9 +1,10 @@
 package main
 
 const (
-	Singleplayer rune = 's'
-	Multiplayer  rune = 'm'
-	Exit         rune = 'e'
+	Singleplayer      rune = 's'
+	MultiplayerOnline rune = 'o'
+	MultiplayerLocal  rune = 'l'
+	Exit              rune = 'e'
 )
 
 func main() {
