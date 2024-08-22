@@ -34,6 +34,26 @@ func MainMenu() {
 	}
 }
 
+const (
+	CreateGame rune = 'c'
+	JoinGame   rune = 'j'
+)
+
 func OnlineMenu() {
-	println("Online menu")
+	ClearScreen()
+	fmt.Printf("<%c> Create game\n", CreateGame)
+	fmt.Printf("<%c> Join game\n", JoinGame)
+	fmt.Printf("\n>")
+
+	var selection rune
+	if _, err := fmt.Scanf("\n%c", &selection); err != nil {
+		panic(err)
+	}
+
+	switch selection {
+	case CreateGame:
+		os.Exit(0)
+	case JoinGame:
+		os.Exit(0)
+	}
 }
