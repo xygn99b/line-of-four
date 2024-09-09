@@ -28,6 +28,7 @@ func (gs *GameState) CurrentToken() Token {
 
 type Game struct {
 	State                    *GameState
+	Board                    *Board
 	consecutiveWinningTokens int
 }
 
@@ -37,46 +38,55 @@ func NewGame(consecutiveWinningTokens int) Game {
 	return g
 }
 
+func (g Game) GetNextTokenPlaceLocation() (int, error) {
+	token := g.State.CurrentToken()
+	token.Color().Printf("%s: Place your token", token)
+	print("\n>")
+
+	var location int
+	if _, err := fmt.Scan(&location); err != nil {
+		println("There was a problem with your input. Enter the number above the desired column")
+		return -1, err
+	}
+
+	return location - 1, nil
+}
+
 func (g Game) Run() {
-	board := NewBoard(g.consecutiveWinningTokens)
-	gameState := NewGameState()
-	for !gameState.GameFinished {
+	g.Board = NewBoard(g.consecutiveWinningTokens)
+	g.State = NewGameState()
+	for !g.State.GameFinished {
 		ClearScreen()
 
-		token := gameState.CurrentToken()
+		token := g.State.CurrentToken()
+		g.Board.PrintRepresentation()
 
-		board.PrintRepresentation()
-		token.Color().Printf("%s: Place your token", token)
-		print("\n>")
-
-		var location int
-		if _, err := fmt.Scan(&location); err != nil {
-			println("There was a problem with your input. Enter the number above the desired column")
+		location, err := g.GetNextTokenPlaceLocation()
+		if err != nil {
 			continue
 		}
 
-		row, err := board.Place(token, location-1)
+		row, err := g.Board.Place(token, location)
 		if err != nil {
 			println(err.Error())
 			continue
 		}
 
-		gameState.NextTurn()
-
-		if board.Full() {
-			gameState.GameFinished = true
-			gameState.EndGameMessage = "Board is full. Draw"
-		}
-
-		win := board.CheckWin([2]int{location - 1, row})
+		win := g.Board.CheckWin([2]int{location, row})
 		if win {
-			gameState.GameFinished = true
-			gameState.EndGameMessage = token.Color().Sprintf("%s won!", token)
+			g.State.GameFinished = true
+			g.State.EndGameMessage = token.Color().Sprintf("%s won!", token)
 		}
 
+		if g.Board.Full() {
+			g.State.GameFinished = true
+			g.State.EndGameMessage = "Board is full. Draw"
+		}
+
+		g.State.NextTurn()
 	}
 
 	ClearScreen()
-	board.PrintRepresentation()
-	println(gameState.EndGameMessage)
+	g.Board.PrintRepresentation()
+	println(g.State.EndGameMessage)
 }
