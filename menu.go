@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"os"
 )
 
@@ -54,6 +55,24 @@ func OnlineMenu() {
 	case CreateGame:
 		os.Exit(0)
 	case JoinGame:
-		os.Exit(0)
+		fmt.Printf("Enter IP:PORT [example: 127.0.0.1:4444]\n>")
+		var address string
+		if _, err := fmt.Scanf("\n%s", &address); err != nil {
+			panic(err)
+		}
+		conn, err := net.Dial("tcp", address)
+		if err != nil {
+			panic(err)
+		}
+
+		for {
+			var buffer []byte = make([]byte, 128)
+			_, err = conn.Read(buffer)
+			if err != nil {
+				panic(err)
+			}
+			println(string(buffer))
+
+		}
 	}
 }
