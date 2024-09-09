@@ -1,4 +1,4 @@
-module connect4
+module lineof4
 
 go 1.22.4
 
