@@ -1,7 +1,16 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+)
+
+type GameType int
+
+const (
+	OnlineGameType = iota
+	CPUGameType
+	LocalGameType
 )
 
 type GameState struct {
@@ -29,16 +38,25 @@ func (gs *GameState) CurrentToken() Token {
 type Game struct {
 	State                    *GameState
 	Board                    *Board
+	GameType                 GameType
 	consecutiveWinningTokens int
 }
 
-func NewGame(consecutiveWinningTokens int) Game {
-	g := Game{consecutiveWinningTokens: consecutiveWinningTokens}
+func NewGame(gameType GameType, consecutiveWinningTokens int) Game {
+	g := Game{GameType: gameType, consecutiveWinningTokens: consecutiveWinningTokens}
 	g.State = NewGameState()
 	return g
 }
 
 func (g Game) GetNextTokenPlaceLocation() (int, error) {
+	switch g.GameType {
+	case LocalGameType:
+		return g.promptUserTokenPlace()
+	}
+	panic(errors.New("invalid game type"))
+}
+
+func (g Game) promptUserTokenPlace() (int, error) {
 	token := g.State.CurrentToken()
 	token.Color().Printf("%s: Place your token", token)
 	print("\n>")
@@ -49,7 +67,7 @@ func (g Game) GetNextTokenPlaceLocation() (int, error) {
 		return -1, err
 	}
 
-	return location - 1, nil
+	return location, nil
 }
 
 func (g Game) Run() {

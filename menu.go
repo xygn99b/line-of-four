@@ -28,7 +28,7 @@ func MainMenu() {
 	case MultiplayerOnline:
 		OnlineMenu()
 	case MultiplayerLocal:
-		game := NewGame(4)
+		game := NewGame(LocalGameType, 4)
 		game.Run()
 	case Exit:
 		os.Exit(0)
