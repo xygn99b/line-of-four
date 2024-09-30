@@ -55,6 +55,14 @@ func (b *Board) Place(token Token, column int) (int, error) {
 	return -1, ErrorColumnFull
 }
 
+func (b *Board) ScoreMove(token Token, column int) (int, error) {
+	fakeBoard := *b
+	if _, err := fakeBoard.Place(TokenBlue, 0); err != nil {
+		return 0, err
+	}
+	return 0, nil
+}
+
 // CheckWin returns isWin as true if the token at the location creates a winning scenario.
 // If isWin, then locations will contain the locations of the winning tokens.
 func (b *Board) CheckWin(location [2]int) (isWin bool) {
@@ -63,11 +71,11 @@ func (b *Board) CheckWin(location [2]int) (isWin bool) {
 		return false
 	}
 
-	if b.checkWinRow(token, location[1]) {
+	if b.countRow(token, location[1]) >= b.ConsecutiveWinningTokens {
 		return true
 	}
 
-	if b.checkWinColumn(token, location[0]) {
+	if b.countColumn(token, location[0]) >= b.ConsecutiveWinningTokens {
 		return true
 	}
 
@@ -77,50 +85,48 @@ func (b *Board) CheckWin(location [2]int) (isWin bool) {
 		baseX, baseY = location[0]-location[1], 0
 	}
 
-	if b.checkWinForwardDiagonal(token, baseX, baseY) {
+	if b.countForwardDiagonal(token, baseX, baseY) >= b.ConsecutiveWinningTokens {
 		return true
 	}
 
-	if b.checkWinBackwardDiagonal(token, baseX, BoardColumns-1-baseY) {
+	if b.countBackwardDiagonal(token, baseX, BoardColumns-1-baseY) >= b.ConsecutiveWinningTokens {
 		return true
 	}
 
 	return false
 }
 
-func (b *Board) checkWinRow(token Token, row int) bool {
-	var count int = 0
+func (b *Board) countRow(token Token, row int) int {
+	count := 0
+	maxCount := 0
 	for x := range BoardColumns {
 		if b.At(x, row) != token {
 			count = 0
 			continue
 		}
 		count++
-		if count == b.ConsecutiveWinningTokens {
-			return true
-		}
+		maxCount = max(maxCount, count)
 	}
-	return false
+	return maxCount
 }
 
-func (b *Board) checkWinColumn(token Token, column int) bool {
+func (b *Board) countColumn(token Token, column int) int {
 	count := 0
+	maxCount := 0
 	for y := range BoardRows {
 		if b.At(column, y) != token {
 			count = 0
 			continue
 		}
 		count++
-		if count == b.ConsecutiveWinningTokens {
-			return true
-		}
+		maxCount = max(maxCount, count)
 	}
-	return false
+	return maxCount
 }
 
-func (b *Board) checkWinForwardDiagonal(token Token, baseX, baseY int) bool {
+func (b *Board) countForwardDiagonal(token Token, baseX, baseY int) int {
 	count := 0
-
+	maxCount := 0
 	for i := range max(BoardRows, BoardColumns) {
 		x, y := baseX+i, baseY+i
 		if !b.ValidPosition(x, y) {
@@ -132,17 +138,14 @@ func (b *Board) checkWinForwardDiagonal(token Token, baseX, baseY int) bool {
 			continue
 		}
 		count++
-		if count == b.ConsecutiveWinningTokens {
-			return true
-		}
+		maxCount = max(maxCount, count)
 	}
-
-	return false
+	return maxCount
 }
 
-func (b *Board) checkWinBackwardDiagonal(token Token, baseX, baseY int) bool {
+func (b *Board) countBackwardDiagonal(token Token, baseX, baseY int) int {
 	count := 0
-
+	maxCount := 0
 	for i := range max(BoardColumns, BoardRows) {
 		x, y := baseX+i, baseY-i
 		if !b.ValidPosition(x, y) {
@@ -154,11 +157,9 @@ func (b *Board) checkWinBackwardDiagonal(token Token, baseX, baseY int) bool {
 			continue
 		}
 		count++
-		if count == b.ConsecutiveWinningTokens {
-			return true
-		}
+		maxCount = max(maxCount, count)
 	}
-	return false
+	return maxCount
 }
 
 func (b *Board) ValidPosition(x, y int) bool {
