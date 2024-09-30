@@ -1,12 +1,7 @@
 package main
 
-const (
-	Singleplayer      rune = 's'
-	MultiplayerOnline rune = 'o'
-	MultiplayerLocal  rune = 'l'
-	Exit              rune = 'e'
-)
+import "lineof4/game"
 
 func main() {
-	MainMenu()
+	game.MainMenu()
 }

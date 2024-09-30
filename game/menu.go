@@ -1,13 +1,21 @@
-package main
+package game
 
 import (
 	"fmt"
+	"lineof4/utils"
 	"net"
 	"os"
 )
 
+const (
+	Singleplayer      rune = 's'
+	MultiplayerOnline rune = 'o'
+	MultiplayerLocal  rune = 'l'
+	Exit              rune = 'e'
+)
+
 func MainMenu() {
-	ClearScreen()
+	utils.ClearScreen()
 	println("Welcome to LINE OF X")
 	println("Enter an option to play")
 	println("----------------------")
@@ -41,7 +49,7 @@ const (
 )
 
 func OnlineMenu() {
-	ClearScreen()
+	utils.ClearScreen()
 	fmt.Printf("<%c> Create game\n", CreateGame)
 	fmt.Printf("<%c> Join game\n", JoinGame)
 	fmt.Printf("\n>")

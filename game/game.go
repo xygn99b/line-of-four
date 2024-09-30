@@ -1,8 +1,9 @@
-package main
+package game
 
 import (
 	"errors"
 	"fmt"
+	"lineof4/utils"
 )
 
 type GameType int
@@ -74,7 +75,7 @@ func (g Game) Run() {
 	g.Board = NewBoard(g.consecutiveWinningTokens)
 	g.State = NewGameState()
 	for !g.State.GameFinished {
-		ClearScreen()
+		utils.ClearScreen()
 
 		token := g.State.CurrentToken()
 		g.Board.PrintRepresentation()
@@ -104,7 +105,7 @@ func (g Game) Run() {
 		g.State.NextTurn()
 	}
 
-	ClearScreen()
+	utils.ClearScreen()
 	g.Board.PrintRepresentation()
 	println(g.State.EndGameMessage)
 }
