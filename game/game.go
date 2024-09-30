@@ -51,6 +51,7 @@ type Game struct {
 	Board                    *Board
 	GameType                 GameType
 	consecutiveWinningTokens int
+	Message                  string
 }
 
 func NewGame(gameType GameType, consecutiveWinningTokens int) (Game, error) {
@@ -96,6 +97,7 @@ func (g *Game) Run(playerList []*Player) error {
 	}
 	for !g.State.GameFinished {
 		utils.ClearScreen()
+		println(g.Message)
 
 		token := g.State.CurrentToken()
 		g.Board.PrintRepresentation()
@@ -107,7 +109,7 @@ func (g *Game) Run(playerList []*Player) error {
 
 		row, err := g.Board.Place(token, location)
 		if err != nil {
-			println(err.Error())
+			g.Message = err.Error()
 			continue
 		}
 
@@ -122,6 +124,7 @@ func (g *Game) Run(playerList []*Player) error {
 			g.State.EndGameMessage = "Board is full. Draw"
 		}
 
+		g.Message = ""
 		g.State.NextTurn()
 	}
 
