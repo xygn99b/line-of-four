@@ -36,8 +36,14 @@ func MainMenu() {
 	case MultiplayerOnline:
 		OnlineMenu()
 	case MultiplayerLocal:
-		game := NewGame(LocalGameType, 4)
-		game.Run()
+		game, err := NewGame(LocalGameType, 4)
+		if err != nil {
+			panic(err)
+		}
+		players := []*Player{NewPlayer("david"), NewPlayer("johnathan")}
+		if err = game.Run(players); err != nil {
+			panic(err)
+		}
 	case Exit:
 		os.Exit(0)
 	}

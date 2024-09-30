@@ -17,14 +17,24 @@ const (
 type GameState struct {
 	TurnCount      int
 	Tokens         []Token
+	Players        []*Player
 	GameFinished   bool
 	EndGameMessage string
 }
 
-func NewGameState() *GameState {
+var ErrorTooManyPlayers = errors.New("too many players for the game")
+
+func NewGameState(playerList []*Player) (*GameState, error) {
 	gameState := &GameState{}
 	gameState.Tokens = []Token{TokenBlue, TokenRed}
-	return gameState
+	gameState.Players = playerList
+	if len(gameState.Players) > len(gameState.Tokens) {
+		return nil, ErrorTooManyPlayers
+	}
+	for i, player := range gameState.Players {
+		player.Token = gameState.Tokens[i]
+	}
+	return gameState, nil
 }
 
 func (gs *GameState) NextTurn() {
@@ -43,13 +53,12 @@ type Game struct {
 	consecutiveWinningTokens int
 }
 
-func NewGame(gameType GameType, consecutiveWinningTokens int) Game {
+func NewGame(gameType GameType, consecutiveWinningTokens int) (Game, error) {
 	g := Game{GameType: gameType, consecutiveWinningTokens: consecutiveWinningTokens}
-	g.State = NewGameState()
-	return g
+	return g, nil
 }
 
-func (g Game) GetNextTokenPlaceLocation() (int, error) {
+func (g *Game) GetNextTokenPlaceLocation() (int, error) {
 	switch g.GameType {
 	case LocalGameType:
 		return g.promptUserTokenPlace()
@@ -57,7 +66,7 @@ func (g Game) GetNextTokenPlaceLocation() (int, error) {
 	panic(errors.New("invalid game type"))
 }
 
-func (g Game) promptUserTokenPlace() (int, error) {
+func (g *Game) promptUserTokenPlace() (int, error) {
 	token := g.State.CurrentToken()
 	token.Color().Printf("%s: Place your token", token)
 	print("\n>")
@@ -68,12 +77,23 @@ func (g Game) promptUserTokenPlace() (int, error) {
 		return -1, err
 	}
 
-	return location, nil
+	return location - 1, nil
 }
 
-func (g Game) Run() {
+func (g *Game) init(playerList []*Player) error {
 	g.Board = NewBoard(g.consecutiveWinningTokens)
-	g.State = NewGameState()
+	state, err := NewGameState(playerList)
+	if err != nil {
+		return err
+	}
+	g.State = state
+	return nil
+}
+
+func (g *Game) Run(playerList []*Player) error {
+	if err := g.init(playerList); err != nil {
+		return err
+	}
 	for !g.State.GameFinished {
 		utils.ClearScreen()
 
@@ -108,4 +128,5 @@ func (g Game) Run() {
 	utils.ClearScreen()
 	g.Board.PrintRepresentation()
 	println(g.State.EndGameMessage)
+	return nil
 }
