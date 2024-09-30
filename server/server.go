@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"errors"
@@ -10,6 +10,22 @@ const (
 	port = 4444
 	ip   = "127.0.0.1"
 )
+
+func GetLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		// check the address type and if it is not a loopback the display it
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
+}
 
 var CurrentPlayers []net.Conn
 
@@ -30,13 +46,20 @@ func send(conn net.Conn, data []byte) error {
 	return nil
 }
 
-func main() {
-	println("Server is waiting...")
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+func Launch(silent bool) net.Addr {
+	if !silent {
+		println("Server is waiting...")
+	}
+	ip := GetLocalIP()
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port))
 	if err != nil {
 		panic(err)
 	}
+	go run(listener, silent)
+	return listener.Addr()
+}
 
+func run(listener net.Listener, silent bool) {
 	for len(CurrentPlayers) < 2 {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -45,12 +68,15 @@ func main() {
 		if err = send(conn, []byte("Hello from server")); err != nil {
 			panic(err)
 		}
-		fmt.Printf("Connection from %s\n", conn.RemoteAddr().String())
+		if !silent {
+			fmt.Printf("Connection from %s\n", conn.RemoteAddr().String())
+		}
 		CurrentPlayers = append(CurrentPlayers, conn)
 	}
-
-	println("Game can start now :)")
-	if err = broadcast([]byte("Starting")); err != nil {
+	if !silent {
+		println("Game is starting")
+	}
+	if err := broadcast([]byte("Starting")); err != nil {
 		panic(err)
 	}
 }

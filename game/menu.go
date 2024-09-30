@@ -2,6 +2,7 @@ package game
 
 import (
 	"fmt"
+	"lineof4/server"
 	"lineof4/utils"
 	"net"
 	"os"
@@ -67,26 +68,32 @@ func OnlineMenu() {
 
 	switch selection {
 	case CreateGame:
-		os.Exit(0)
+		addr := server.Launch(true)
+		fmt.Printf("Server launched at %s\n", addr.String())
+		joinGame(addr.String())
 	case JoinGame:
 		fmt.Printf("Enter IP:PORT [example: 127.0.0.1:4444]\n>")
 		var address string
 		if _, err := fmt.Scanf("\n%s", &address); err != nil {
 			panic(err)
 		}
-		conn, err := net.Dial("tcp", address)
+		joinGame(address)
+	}
+}
+
+func joinGame(address string) {
+	conn, err := net.Dial("tcp", address)
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		var buffer []byte = make([]byte, 128)
+		_, err = conn.Read(buffer)
 		if err != nil {
 			panic(err)
 		}
+		println(string(buffer))
 
-		for {
-			var buffer []byte = make([]byte, 128)
-			_, err = conn.Read(buffer)
-			if err != nil {
-				panic(err)
-			}
-			println(string(buffer))
-
-		}
 	}
 }
