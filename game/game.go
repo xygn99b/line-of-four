@@ -98,7 +98,6 @@ func (g *Game) Run(playerList []*Player) error {
 	for !g.State.GameFinished {
 		utils.ClearScreen()
 		println(g.Message)
-
 		token := g.State.CurrentToken()
 		g.Board.PrintRepresentation()
 
