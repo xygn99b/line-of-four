@@ -1,6 +1,6 @@
 # Line of Four
 
-'Connect Four' style terminal game
+WIP 'Connect Four' style terminal game
 
 ## Run / Install
 After cloning the repository, navigate to the root of it and run:
