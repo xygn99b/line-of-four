@@ -2,7 +2,7 @@ package game
 
 import (
 	"fmt"
-	"lineof4/server"
+	"lineof4/network"
 	"lineof4/utils"
 	"net"
 	"os"
@@ -41,7 +41,7 @@ func MainMenu() {
 		if err != nil {
 			panic(err)
 		}
-		players := []*Player{NewPlayer("david"), NewPlayer("johnathan")}
+		players := []*Player{NewPlayer(), NewPlayer()}
 		if err = game.Run(players); err != nil {
 			panic(err)
 		}
@@ -68,7 +68,7 @@ func OnlineMenu() {
 
 	switch selection {
 	case CreateGame:
-		addr := server.Launch(true)
+		addr := network.Launch(true)
 		fmt.Printf("Server launched at %s\n", addr.String())
 		joinGame(addr.String())
 	case JoinGame:
@@ -86,14 +86,36 @@ func joinGame(address string) {
 	if err != nil {
 		panic(err)
 	}
-
+	conn.Write([]byte(network.NewMessage(network.WelcomeMessage, "hi").Encode()))
+	var pos rune = 0
 	for {
-		var buffer []byte = make([]byte, 128)
-		_, err = conn.Read(buffer)
+		buf := make([]byte, 128)
+		_, err = conn.Read(buf)
 		if err != nil {
 			panic(err)
 		}
-		println(string(buffer))
-
+		msg, err := network.NewMessageFromBytes(buf)
+		if err != nil {
+			println(err.Error())
+			continue
+		}
+		if msg.Type == network.StartMessage {
+			break
+		}
+		if msg.Type == network.WelcomeMessage {
+			pos = rune(msg.Payload[0])
+		}
+	}
+	game, err := NewGame(OnlineGameType, 4)
+	focusPlayer := NewPlayer()
+	players := []*Player{NewPlayer(), focusPlayer}
+	if pos == rune(0) {
+		players = []*Player{focusPlayer, NewPlayer()}
+	}
+	game.FocusPlayer = focusPlayer
+	game.Conn = conn
+	println("Starting")
+	if err = game.Run(players); err != nil {
+		panic(err)
 	}
 }

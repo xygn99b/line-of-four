@@ -1,4 +1,4 @@
-package server
+package network
 
 import (
 	"errors"
@@ -7,8 +7,7 @@ import (
 )
 
 const (
-	port = 4444
-	ip   = "127.0.0.1"
+	defaultPort = 0
 )
 
 func GetLocalIP() string {
@@ -29,9 +28,12 @@ func GetLocalIP() string {
 
 var CurrentPlayers []net.Conn
 
-func broadcast(data []byte) error {
+func broadcast(data []byte, exclude net.Conn) error {
 	var errorList []error
 	for _, player := range CurrentPlayers {
+		if player == exclude {
+			continue
+		}
 		if err := send(player, data); err != nil {
 			errorList = append(errorList, err)
 		}
@@ -51,7 +53,7 @@ func Launch(silent bool) net.Addr {
 		println("Server is waiting...")
 	}
 	ip := GetLocalIP()
-	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", ip, port))
+	listener, err := net.Listen("tcp", fmt.Sprintf("%s:%d", ip, defaultPort))
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +67,7 @@ func run(listener net.Listener, silent bool) {
 		if err != nil {
 			panic(err)
 		}
-		if err = send(conn, []byte("Hello from server")); err != nil {
+		if err = send(conn, []byte(NewMessage(WelcomeMessage, string(rune(len(CurrentPlayers)))).Encode())); err != nil {
 			panic(err)
 		}
 		if !silent {
@@ -76,7 +78,22 @@ func run(listener net.Listener, silent bool) {
 	if !silent {
 		println("Game is starting")
 	}
-	if err := broadcast([]byte("Starting")); err != nil {
+	if err := broadcast([]byte(NewMessage(StartMessage, "").Encode()), nil); err != nil {
 		panic(err)
+	}
+	for _, player := range CurrentPlayers {
+		go handle(player)
+	}
+}
+func handle(conn net.Conn) {
+	for {
+		buf := make([]byte, 128)
+		_, err := conn.Read(buf)
+		if err != nil {
+			panic(err)
+		}
+		if err := broadcast(buf, conn); err != nil {
+			panic(err)
+		}
 	}
 }

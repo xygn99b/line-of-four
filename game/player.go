@@ -1,11 +1,20 @@
 package game
 
+import (
+	"lineof4/network"
+	"net"
+)
+
 type Player struct {
 	score float32
 	Token Token
-	Name  string
+	conn  net.Conn
 }
 
-func NewPlayer(name string) *Player {
-	return &Player{Name: name}
+func NewPlayer() *Player {
+	return &Player{}
+}
+
+func (p *Player) send(message network.Message) {
+	p.conn.Write([]byte(message.Encode()))
 }

@@ -22,7 +22,7 @@ func NewBoard(consecutiveWinningTokens int) *Board {
 	return board
 }
 
-// PrintRepresentation returns a string representation of the board and its tokens.
+// PrintRepresentation prints a string representation of the board and its tokens.
 func (b *Board) PrintRepresentation() {
 	print("  (1) (2) (3) (4) (5) (6) (7)\n")
 	print("   -   -   -   -   -   -   -\n")
